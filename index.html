@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<!-- saved from url=(0049)file:///C:/Users/ERIC/Desktop/QUANT%20ENGINE.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>CheChe Quant Engine</title>
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CheChe Quant Engine">
+<link rel="manifest" href="file:///C:/Users/ERIC/Desktop/manifest.webmanifest">
+<link rel="icon" href="file:///C:/Users/ERIC/Desktop/icon-192.svg" type="image/svg+xml">
+
+<style>
+body{
+    font-family:Arial, sans-serif;
+    background:#0f172a;
+    color:white;
+    padding:20px;
+    margin:0;
+}
+.wrapper{
+    max-width:1400px;
+    margin:0 auto;
+}
+h1{
+    text-align:center;
+    color:#22c55e;
+    margin-bottom:20px;
+    letter-spacing:0.5px;
+}
+.top-panel{
+    background:#111827;
+    border:1px solid #334155;
+    border-radius:14px;
+    padding:18px;
+    margin-bottom:18px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.25);
+}
+.topstats{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));
+    gap:12px;
+    margin-bottom:18px;
+}
+.statbox{
+    background:#1e293b;
+    border:1px solid #334155;
+    border-radius:10px;
+    padding:12px;
+    text-align:center;
+}
+.statlabel{
+    font-size:12px;
+    color:#94a3b8;
+    margin-bottom:6px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+}
+.statvalue{
+    font-size:22px;
+    font-weight:bold;
+    color:#f8fafc;
+}
+.control-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(170px, 1fr));
+    gap:12px;
+    margin-top:8px;
+}
+.control-box{
+    background:#1e293b;
+    border:1px solid #334155;
+    border-radius:10px;
+    padding:12px;
+}
+.control-box label{
+    display:block;
+    font-size:12px;
+    color:#94a3af;
+    margin-bottom:8px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+}
+.control-box input{
+    width:100%;
+    padding:9px 10px;
+    border-radius:8px;
+    border:1px solid #475569;
+    background:#0f172a;
+    color:white;
+    font-size:14px;
+    font-family:Arial, sans-serif;
+    box-sizing:border-box;
+}
+.button-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(130px, 1fr));
+    gap:12px;
+    margin-top:14px;
+}
+.action-btn{
+    padding:11px 14px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:bold;
+    font-size:14px;
+    font-family:Arial, sans-serif;
+}
+.start-btn{ background:#22c55e; color:#052e16; }
+.undo-btn{ background:#f59e0b; color:#111827; }
+.save-btn{ background:#38bdf8; color:#082f49; }
+.export-btn{ background:#a855f7; color:white; }
+.import-btn{ background:#e5e7eb; color:#111827; }
+.install-btn{ background:#10b981; color:#052e16; display:none; }
+.status-note{
+    margin-top:10px;
+    font-size:13px;
+    color:#94a3b8;
+    text-align:center;
+}
+table{
+    width:100%;
+    margin-top:20px;
+    border-collapse:collapse;
+    background:#111827;
+    overflow:hidden;
+}
+td, th{
+    border:1px solid #333;
+    padding:8px;
+    text-align:center;
+    font-size:14px;
+}
+th{
+    background:#1e293b;
+    color:#f8fafc;
+}
+.win{ background:#14532d; }
+.loss{ background:#7f1d1d; }
+.cap{ background:#f59e0b; color:black; }
+
+#popup{
+    display:none;
+    position:fixed;
+    top:40%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    background:#22c55e;
+    color:black;
+    padding:20px 24px;
+    font-size:20px;
+    border-radius:10px;
+    z-index:999;
+    font-weight:bold;
+    box-shadow:0 8px 20px rgba(0,0,0,0.3);
+}
+.table-wrap{
+    background:#111827;
+    border:1px solid #334155;
+    border-radius:14px;
+    padding:14px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.25);
+    overflow-x:auto;
+}
+td input{
+    width:90px;
+    padding:6px;
+    background:#0f172a;
+    color:white;
+    border:1px solid #475569;
+    border-radius:6px;
+}
+td button{
+    padding:6px 10px;
+    margin:2px;
+    cursor:pointer;
+    border:none;
+    border-radius:6px;
+    font-weight:bold;
+}
+@media (max-width: 700px){
+    body{ padding:12px; }
+    h1{ font-size:24px; }
+    .statvalue{ font-size:18px; }
+    td, th{ font-size:12px; padding:6px; }
+    td input{ width:72px; }
+}
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+<h1>Quant Engine KES</h1>
+
+<div class="top-panel">
+    <div class="topstats">
+        <div class="statbox">
+            <div class="statlabel">W Count</div>
+            <div class="statvalue" id="wCount">0</div>
+        </div>
+        <div class="statbox">
+            <div class="statlabel">L Count</div>
+            <div class="statvalue" id="lCount">1</div>
+        </div>
+        <div class="statbox">
+            <div class="statlabel">Events Played</div>
+            <div class="statvalue" id="playedCount">1</div>
+        </div>
+        <div class="statbox">
+            <div class="statlabel">Events Remaining</div>
+            <div class="statvalue" id="remainingEvents">119</div>
+        </div>
+        <div class="statbox">
+            <div class="statlabel">Wins Remaining</div>
+            <div class="statvalue" id="remainingWins">26</div>
+        </div>
+        <div class="statbox">
+            <div class="statlabel">Current Wallet</div>
+            <div class="statvalue" id="currentWallet">42.50</div>
+        </div>
+        <div class="statbox">
+            <div class="statlabel">Locked Profit</div>
+            <div class="statvalue" id="lockedTop">0.00</div>
+        </div>
+        <div class="statbox">
+            <div class="statlabel">Average Multiplier</div>
+            <div class="statvalue" id="avgOddsTop">9.09</div>
+        </div>
+    </div>
+
+    <div class="control-grid">
+        <div class="control-box">
+            <label>Events</label>
+            <input id="events" value="10">
+        </div>
+        <div class="control-box">
+            <label>Hits</label>
+            <input id="wins" value="5">
+        </div>
+        <div class="control-box">
+            <label>Bankroll</label>
+            <input id="bankroll" value="1000">
+        </div>
+        <div class="control-box">
+            <label>Profit Lock %</label>
+            <input id="lockPct" value="30">
+        </div>
+        <div class="control-box">
+            <label>Stake Cap %</label>
+            <input id="capPct" value="7">
+        </div>
+        <div class="control-box">
+            <label>Loss Limit</label>
+            <input id="lossLimit" value="3">
+        </div>
+    </div>
+
+    <div class="button-grid">
+        <button class="action-btn start-btn" onclick="start()">Start</button>
+        <button class="action-btn undo-btn" onclick="undo()">Undo</button>
+        <button class="action-btn save-btn" onclick="save()">Save</button>
+        <button class="action-btn export-btn" onclick="exportData()">Export</button>
+        <button class="action-btn import-btn" onclick="document.getElementById(&#39;fileInput&#39;).click()">Import</button>
+        <button class="action-btn install-btn" id="installBtn">Install App</button>
+    </div>
+
+    <div class="status-note" id="appStatus">Running as normal web page. Add manifest and sw.js on hosting to enable full PWA features.</div>
+</div>
+
+<input type="file" id="fileInput" style="display:none" onchange="importData(event)">
+
+<div id="popup">🎯 TARGET REACHED</div>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>N</th>
+<th>K</th>
+<th>Wallet</th>
+<th>Stake</th>
+<th>Multiplier</th>
+<th>Profit</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="tbody"><tr class="loss">
+    <td>1</td>
+    <td>120</td>
+    <td>26</td>
+    <td>50.00</td>
+    <td id="stake1">7.50</td>
+    <td><input id="odds1" type="number" step="0.01" oninput="updateAverage()"></td>
+    <td id="profit1">-7.50</td>
+    <td>
+        <button onclick="win(7.5,1,this)">W</button>
+        <button onclick="loss(7.5,1,this)">L</button>
+    </td></tr><tr>
+    <td>2</td>
+    <td>119</td>
+    <td>26</td>
+    <td>42.50</td>
+    <td id="stake2">6.38</td>
+    <td><input id="odds2" type="number" step="0.01" oninput="updateAverage()"></td>
+    <td id="profit2">-</td>
+    <td>
+        <button onclick="win(6.375,2,this)">W</button>
+        <button onclick="loss(6.375,2,this)">L</button>
+    </td></tr></tbody>
+</table>
+</div>
+
+</div>
+
+<script>
+// ===== CORE =====
+function combin(n,k){
+    if(k>n||k<0)return 0;
+    let r=1;
+    for(let i=1;i<=k;i++){
+        r=r*(n-i+1)/i;
+    }
+    return r;
+}
+
+function calcStake(B,n,k){
+    if(k<=0||n<=0)return 0;
+    let stake = B * (combin(n-1,k-1)/combin(n,k));
+    return Math.floor(stake*100)/100;
+}
+
+// ===== AVERAGE =====
+function updateAverage(){
+    let inputs = document.querySelectorAll("input[id^='odds']");
+    let sum = 0;
+    let count = 0;
+
+    inputs.forEach(input => {
+        let val = parseFloat(input.value);
+        if(!isNaN(val) && val > 0){
+            sum += val;
+            count++;
+        }
+    });
+
+    let avg = count > 0 ? (sum / count) : 0;
+    document.getElementById("avgOddsTop").innerText = avg.toFixed(2);
+    autoSaveState();
+}
+
+// ===== STATE =====
+let state = {};
+let history = [];
+let lossStreak = 0;
+let peakBankroll = 0;
+let lockedProfit = 0;
+let winCount = 0;
+let lossCount = 0;
+
+// ===== TRACKERS =====
+function updateTrackers(){
+    document.getElementById("wCount").innerText = winCount;
+    document.getElementById("lCount").innerText = lossCount;
+    document.getElementById("playedCount").innerText = winCount + lossCount;
+    document.getElementById("remainingEvents").innerText = state.n || 0;
+    document.getElementById("remainingWins").innerText = state.k || 0;
+    document.getElementById("currentWallet").innerText = state.B ? state.B.toFixed(2) : "0.00";
+    document.getElementById("lockedTop").innerText = lockedProfit.toFixed(2);
+}
+
+// ===== START =====
+function start(){
+    state = {
+        n:+events.value,
+        k:+wins.value,
+        B:+bankroll.value,
+        step:1
+    };
+    history=[];
+    tbody.innerHTML="";
+
+    peakBankroll = state.B;
+    lossStreak = 0;
+    lockedProfit = 0;
+    winCount = 0;
+    lossCount = 0;
+
+    updateAverage();
+    updateTrackers();
+    nextRow();
+    autoSaveState();
+}
+
+// ===== ROW =====
+function nextRow(){
+    if(state.k<=0 || state.n<=0){
+        updateTrackers();
+        showPopup();
+        autoSaveState();
+        return;
+    }
+
+    let stake = calcStake(state.B,state.n,state.k);
+
+    let capPct = (+document.getElementById("capPct").value || 0) / 100;
+    let maxStake = state.B * capPct;
+
+    if(stake > maxStake){
+        stake = maxStake;
+    }
+
+    let lossLimit = +document.getElementById("lossLimit").value || 0;
+    if(lossStreak >= lossLimit){
+        stake *= 0.5;
+    }
+
+    let row=document.createElement("tr");
+
+    row.innerHTML=`
+    <td>${state.step}</td>
+    <td>${state.n}</td>
+    <td>${state.k}</td>
+    <td>${state.B.toFixed(2)}</td>
+    <td id="stake${state.step}">${stake.toFixed(2)}</td>
+    <td><input id="odds${state.step}" type="number" step="0.01" oninput="updateAverage()"></td>
+    <td id="profit${state.step}">-</td>
+    <td>
+        <button onclick="win(${stake},${state.step},this)">W</button>
+        <button onclick="loss(${stake},${state.step},this)">L</button>
+    </td>`;
+
+    tbody.appendChild(row);
+    updateTrackers();
+    autoSaveState();
+}
+
+// ===== WIN =====
+function win(stake,step,btn){
+    let odds = +document.getElementById("odds"+step).value;
+    if(!odds||odds<=1){
+        alert("Enter multiplier >1");
+        return;
+    }
+
+    history.push({
+        state: JSON.parse(JSON.stringify(state)),
+        lossStreak,
+        peakBankroll,
+        lockedProfit,
+        winCount,
+        lossCount,
+        table: tbody.innerHTML
+    });
+
+    let maxPayout = 2000000;
+    let rawPayout = stake * odds;
+    let payout = rawPayout;
+    let profit;
+
+    if(rawPayout > maxPayout){
+        payout = maxPayout;
+        stake = payout / odds;
+        profit = payout - stake;
+        document.getElementById("stake"+step).innerText = stake.toFixed(2);
+        btn.closest("tr").classList.add("cap");
+    } else {
+        profit = stake * (odds - 1);
+        btn.closest("tr").classList.add("win");
+    }
+
+    document.getElementById("profit"+step).innerText = profit.toFixed(2);
+
+    state.B += profit;
+
+    if(state.B > peakBankroll){
+        let gain = state.B - peakBankroll;
+        let lockPct = (+document.getElementById("lockPct").value || 0) / 100;
+        let withdraw = gain * lockPct;
+
+        lockedProfit += withdraw;
+        state.B -= withdraw;
+
+        peakBankroll = state.B;
+    }
+
+    lossStreak = 0;
+    winCount++;
+
+    state.k--;
+    state.n--;
+    state.step++;
+
+    updateTrackers();
+    nextRow();
+    autoSaveState();
+}
+
+// ===== LOSS =====
+function loss(stake,step,btn){
+    history.push({
+        state: JSON.parse(JSON.stringify(state)),
+        lossStreak,
+        peakBankroll,
+        lockedProfit,
+        winCount,
+        lossCount,
+        table: tbody.innerHTML
+    });
+
+    document.getElementById("profit"+step).innerText = "-" + stake.toFixed(2);
+    btn.closest("tr").classList.add("loss");
+
+    state.B -= stake;
+    lossStreak++;
+    lossCount++;
+
+    state.n--;
+    state.step++;
+
+    updateTrackers();
+    nextRow();
+    autoSaveState();
+}
+
+// ===== UNDO =====
+function undo(){
+    if(history.length===0) return;
+
+    let prev = history.pop();
+    state = prev.state;
+    lossStreak = prev.lossStreak;
+    peakBankroll = prev.peakBankroll;
+    lockedProfit = prev.lockedProfit;
+    winCount = prev.winCount;
+    lossCount = prev.lossCount;
+    tbody.innerHTML = prev.table;
+
+    updateAverage();
+    updateTrackers();
+    autoSaveState();
+}
+
+// ===== SNAPSHOT =====
+function currentSnapshot(){
+    return {
+        state,
+        history,
+        table:tbody.innerHTML,
+        lossStreak,
+        peakBankroll,
+        lockedProfit,
+        winCount,
+        lossCount,
+        controls:{
+            events:events.value,
+            wins:wins.value,
+            bankroll:bankroll.value,
+            lockPct:lockPct.value,
+            capPct:capPct.value,
+            lossLimit:lossLimit.value
+        }
+    };
+}
+
+function applySnapshot(data){
+    state=data.state || {};
+    history=data.history || [];
+    tbody.innerHTML=data.table || "";
+    lossStreak=data.lossStreak || 0;
+    peakBankroll=data.peakBankroll || state.B || 0;
+    lockedProfit=data.lockedProfit || 0;
+    winCount=data.winCount || 0;
+    lossCount=data.lossCount || 0;
+
+    if(data.controls){
+        events.value=data.controls.events ?? events.value;
+        wins.value=data.controls.wins ?? wins.value;
+        bankroll.value=data.controls.bankroll ?? bankroll.value;
+        lockPct.value=data.controls.lockPct ?? lockPct.value;
+        capPct.value=data.controls.capPct ?? capPct.value;
+        lossLimit.value=data.controls.lossLimit ?? lossLimit.value;
+    }
+
+    updateAverage();
+    updateTrackers();
+}
+
+// ===== STORAGE =====
+function autoSaveState(){
+    localStorage.setItem("cheche_quant_engine_autosave", JSON.stringify(currentSnapshot()));
+}
+
+function save(){
+    localStorage.setItem("cheche_quant_engine_save", JSON.stringify(currentSnapshot()));
+    alert("Saved!");
+}
+
+function importData(e){
+    let file=e.target.files[0];
+    let reader=new FileReader();
+    reader.onload=function(){
+        let data=JSON.parse(reader.result);
+        applySnapshot(data);
+        autoSaveState();
+    };
+    reader.readAsText(file);
+}
+
+function exportData(){
+    let data = JSON.stringify(currentSnapshot());
+    let blob = new Blob([data], {type:"application/json"});
+    let a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);
+    a.download="cheche-quant-engine.json";
+    a.click();
+}
+
+// ===== POPUP =====
+function showPopup(){
+    let p=document.getElementById("popup");
+    p.style.display="block";
+    setTimeout(()=>p.style.display="none",3000);
+}
+
+// ===== RESTORE =====
+(function restoreAutosave(){
+    const raw = localStorage.getItem("cheche_quant_engine_autosave");
+    if(raw){
+        try{
+            applySnapshot(JSON.parse(raw));
+        }catch(e){}
+    } else {
+        updateTrackers();
+        updateAverage();
+    }
+})();
+
+// ===== INSTALL PROMPT =====
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    const btn = document.getElementById('installBtn');
+    btn.style.display = 'inline-block';
+    document.getElementById('appStatus').innerText = 'Install App is available on this device.';
+});
+
+document.getElementById('installBtn').addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    document.getElementById('installBtn').style.display = 'none';
+});
+
+// ===== SERVICE WORKER =====
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').then(() => {
+            document.getElementById('appStatus').innerText = 'PWA ready. You can install and use it offline once cached.';
+        }).catch(() => {
+            document.getElementById('appStatus').innerText = 'Running as normal web page. Add manifest and sw.js on hosting to enable full PWA features.';
+        });
+    });
+}
+</script>
+
+</body></html>
